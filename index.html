@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Enzyme Specificity Challenge</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #0f172a; color: white; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(56, 189, 248, 0.4); }
+        .transition-all { transition: all 0.3s ease; }
+        
+        /* Modal Animation */
+        .modal-enter { animation: modalIn 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes modalIn {
+            from { opacity: 0; transform: scale(0.95) translateY(10px); }
+            to { opacity: 1; transform: scale(1) translateY(0); }
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col">
+
+    <!-- Header -->
+    <header class="bg-slate-800 border-b border-slate-700 p-4 shadow-lg text-center">
+        <h1 class="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500">
+            🧪 Biocatalyst: Specificity Challenge
+        </h1>
+        <p class="text-slate-400 mt-2 text-sm">Match the substrate to the enzyme based on its specificity rule!</p>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="flex-grow flex flex-col items-center justify-center p-6 relative">
+        
+        <!-- Score & Progress -->
+        <div class="w-full max-w-4xl flex justify-between items-center mb-8">
+            <div class="bg-slate-800 px-6 py-3 rounded-full border border-slate-700 shadow-lg">
+                <span class="text-slate-400 uppercase text-xs font-bold tracking-wider">Level</span>
+                <span id="level-display" class="text-2xl font-bold text-cyan-400 ml-2">1 / 6</span>
+            </div>
+            <div class="bg-slate-800 px-6 py-3 rounded-full border border-slate-700 shadow-lg">
+                <span class="text-slate-400 uppercase text-xs font-bold tracking-wider">Score</span>
+                <span id="score-display" class="text-2xl font-bold text-emerald-400 ml-2">0</span>
+            </div>
+        </div>
+
+        <!-- The Enzyme (Active Site) -->
+        <div class="w-full max-w-2xl bg-slate-800 rounded-3xl border-2 border-cyan-500 p-8 shadow-[0_0_40px_-10px_rgba(6,182,212,0.5)] mb-12 text-center relative">
+            <div class="absolute -top-5 left-1/2 transform -translate-x-1/2 bg-cyan-500 text-slate-900 px-6 py-1 rounded-full font-bold uppercase tracking-widest text-sm shadow-lg" id="specificity-type">
+                Bond Specificity
+            </div>
+            
+            <div class="text-6xl mb-4" id="enzyme-icon">🧬</div>
+            <h2 class="text-3xl font-extrabold text-white mb-2" id="enzyme-name">α-Amylase</h2>
+            <p class="text-lg text-slate-300 italic bg-slate-900 p-4 rounded-xl border border-slate-700" id="enzyme-rule">
+                "I only break α-1,4-glycosidic bonds. I don't care about the rest of the polymer!"
+            </p>
+        </div>
+
+        <!-- Substrate Options -->
+        <h3 class="text-xl font-semibold text-slate-400 mb-6">Select the correct substrate to catalyze:</h3>
+        <div class="w-full max-w-5xl grid grid-cols-1 md:grid-cols-3 gap-6" id="substrate-container">
+            <!-- Substrate cards injected via JS -->
+        </div>
+
+    </main>
+
+    <!-- Custom Modal for Feedback -->
+    <div id="feedback-modal" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900 bg-opacity-80 backdrop-blur-sm">
+        <div class="bg-slate-800 border-2 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-2xl modal-enter text-center" id="modal-content">
+            <div id="modal-icon" class="text-7xl mb-4">✅</div>
+            <h2 id="modal-title" class="text-3xl font-bold mb-4">Correct!</h2>
+            <p id="modal-message" class="text-slate-300 text-lg mb-8">Explanation goes here.</p>
+            <button onclick="nextLevel()" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold py-3 px-10 rounded-full shadow-lg transition-all transform hover:scale-105 w-full text-xl">
+                Continue 🚀
+            </button>
+        </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div id="game-over" class="fixed inset-0 z-50 hidden items-center justify-center bg-slate-900">
+        <div class="text-center">
+            <div class="text-8xl mb-6">🎉</div>
+            <h2 class="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-cyan-500 mb-4">Lecture Complete!</h2>
+            <p class="text-2xl text-slate-300 mb-8">You mastered all 6 types of Enzyme Specificity.</p>
+            <p class="text-xl text-slate-400 mb-8">Final Score: <span id="final-score" class="font-bold text-white">0</span> / 600</p>
+            <button onclick="location.reload()" class="bg-slate-800 border border-slate-600 hover:bg-slate-700 text-white font-bold py-3 px-8 rounded-full shadow-lg transition-all">
+                Play Again 🔄
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // --- GAME DATA based on Lecture Slides ---
+        const levels = [
+            {
+                type: "Bond Specificity",
+                enzyme: "α-Amylase",
+                icon: "✂️",
+                rule: "\"I only hydrolyze α-1,4-glycosidic bonds. I do not care about the global structure!\"",
+                options: [
+                    { name: "Starch (α-1,4 bonds)", emoji: "🌾", correct: true, reason: "Correct! α-amylase targets the α-1,4-glycosidic bonds found in starch and glycogen, showing Bond Specificity." },
+                    { name: "Cellulose (β-1,4 bonds)", emoji: "🌿", correct: false, reason: "Incorrect. Cellulose has β-1,4 bonds. α-amylase cannot break these!" },
+                    { name: "Triglyceride (Ester bonds)", emoji: "🧈", correct: false, reason: "Incorrect. Ester bonds are broken by Lipase, not Amylase." }
+                ]
+            },
+            {
+                type: "Group Specificity",
+                enzyme: "Pepsin (Endopeptidase)",
+                icon: "🥩",
+                rule: "\"I hydrolyze peptide bonds, BUT ONLY if they are next to an aromatic amino acid group!\"",
+                options: [
+                    { name: "Peptide + Glycine (Aliphatic)", emoji: "🔵", correct: false, reason: "Incorrect. Glycine is aliphatic. Pepsin requires an aromatic group!" },
+                    { name: "Peptide + Phenylalanine (Aromatic)", emoji: "🛑", correct: true, reason: "Correct! Pepsin exhibits Group Specificity. It needs the peptide bond AND the bulky aromatic ring (like Phenylalanine, Tyrosine, or Tryptophan) to act." },
+                    { name: "Ester + Tyrosine", emoji: "🟤", correct: false, reason: "Incorrect. Pepsin breaks peptide bonds, not ester bonds, even if Tyrosine is present." }
+                ]
+            },
+            {
+                type: "Substrate Specificity",
+                enzyme: "Lactase",
+                icon: "🥛",
+                rule: "\"I have absolute specificity. I am a lock, and only ONE specific key fits me.\"",
+                options: [
+                    { name: "Sucrose", emoji: "🍬", correct: false, reason: "Incorrect. Sucrose is broken down by Sucrase. Lactase has absolute specificity." },
+                    { name: "Lactose", emoji: "🥛", correct: true, reason: "Correct! Lactase exhibits absolute Substrate Specificity. It ONLY hydrolyzes the β-1-4 glycosidic bond of lactose." },
+                    { name: "Maltose", emoji: "🍯", correct: false, reason: "Incorrect. Maltose is broken down by Maltase." }
+                ]
+            },
+            {
+                type: "Optical Specificity",
+                enzyme: "D-amino acid oxidase",
+                icon: "🪞",
+                rule: "\"I only catalyze reactions involving right-handed (D) isomers. Keep those L-isomers away!\"",
+                options: [
+                    { name: "L-Alanine", emoji: "🤛", correct: false, reason: "Incorrect! This is the left-handed isomer. You need L-amino acid oxidase for this." },
+                    { name: "D-Alanine", emoji: "🤜", correct: true, reason: "Correct! Optical Specificity means the enzyme only recognizes the specific 3D stereoisomer, in this case, the D-amino acid." },
+                    { name: "D-Glucose", emoji: "🍬", correct: false, reason: "Incorrect. This is a sugar, not an amino acid. We need an amino acid for this oxidase." }
+                ]
+            },
+            {
+                type: "Geometrical Specificity",
+                enzyme: "Alcohol Dehydrogenase",
+                icon: "🍷",
+                rule: "\"I am flexible! I can process different molecules as long as their molecular geometry is similar.\"",
+                options: [
+                    { name: "Methanol & Ethanol", emoji: "🍸", correct: true, reason: "Correct! Alcohol dehydrogenase can process both because they have similar molecular geometries, demonstrating Geometrical Specificity." },
+                    { name: "Uric Acid", emoji: "🧪", correct: false, reason: "Incorrect. The geometry of uric acid does not fit alcohol dehydrogenase." },
+                    { name: "Cellulose", emoji: "🪵", correct: false, reason: "Incorrect. A massive polymer does not fit into this active site!" }
+                ]
+            },
+            {
+                type: "Co-factor Specificity",
+                enzyme: "Apoenzyme (Inactive)",
+                icon: "💤",
+                rule: "\"I am currently inactive. I cannot catalyze ANY substrate until my non-protein helper arrives!\"",
+                options: [
+                    { name: "The Substrate", emoji: "🧩", correct: false, reason: "Incorrect. Even if the perfect substrate is here, the Apoenzyme is asleep without its co-factor!" },
+                    { name: "Zinc Ion (Zn2+)", emoji: "⚡", correct: true, reason: "Correct! Many enzymes require a metal ion Co-factor. Once the Zinc binds, it becomes an active Holoenzyme!" },
+                    { name: "Water (H2O)", emoji: "💧", correct: false, reason: "Incorrect. While water is used in hydrolysis, it is not a co-factor that activates an apoenzyme." }
+                ]
+            }
+        ];
+
+        // --- GAME STATE ---
+        let currentLevel = 0;
+        let score = 0;
+        const pointsPerLevel = 100;
+
+        // --- DOM ELEMENTS ---
+        const uiLevel = document.getElementById('level-display');
+        const uiScore = document.getElementById('score-display');
+        const uiSpecType = document.getElementById('specificity-type');
+        const uiEnzymeIcon = document.getElementById('enzyme-icon');
+        const uiEnzymeName = document.getElementById('enzyme-name');
+        const uiEnzymeRule = document.getElementById('enzyme-rule');
+        const uiSubstrates = document.getElementById('substrate-container');
+        
+        const modal = document.getElementById('feedback-modal');
+        const modalContent = document.getElementById('modal-content');
+        const modalIcon = document.getElementById('modal-icon');
+        const modalTitle = document.getElementById('modal-title');
+        const modalMessage = document.getElementById('modal-message');
+        const gameOverScreen = document.getElementById('game-over');
+        const finalScore = document.getElementById('final-score');
+
+        // --- GAME LOGIC ---
+        function loadLevel() {
+            const levelData = levels[currentLevel];
+            
+            // Update UI Text
+            uiLevel.innerText = `${currentLevel + 1} / ${levels.length}`;
+            uiSpecType.innerText = levelData.type;
+            uiEnzymeIcon.innerText = levelData.icon;
+            uiEnzymeName.innerText = levelData.enzyme;
+            uiEnzymeRule.innerText = levelData.rule;
+
+            // Clear and Load Substrates
+            uiSubstrates.innerHTML = '';
+            
+            // Shuffle options for randomness
+            const shuffledOptions = [...levelData.options].sort(() => Math.random() - 0.5);
+
+            shuffledOptions.forEach((option, index) => {
+                const card = document.createElement('button');
+                card.className = "bg-slate-800 border border-slate-600 rounded-2xl p-6 flex flex-col items-center justify-center card-hover transition-all cursor-pointer group hover:bg-slate-700 hover:border-cyan-400";
+                card.onclick = () => handleSelection(option);
+                
+                card.innerHTML = `
+                    <div class="text-5xl mb-4 group-hover:scale-110 transition-transform">${option.emoji}</div>
+                    <h4 class="text-xl font-bold text-white text-center">${option.name}</h4>
+                `;
+                uiSubstrates.appendChild(card);
+            });
+        }
+
+        function handleSelection(option) {
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (option.correct) {
+                // Correct Answer
+                score += pointsPerLevel;
+                uiScore.innerText = score;
+                modalContent.className = "bg-slate-800 border-2 border-emerald-500 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-[0_0_30px_-5px_rgba(16,185,129,0.5)] modal-enter text-center";
+                modalIcon.innerText = "✅";
+                modalTitle.innerText = "Correct Match!";
+                modalTitle.className = "text-3xl font-bold mb-4 text-emerald-400";
+            } else {
+                // Incorrect Answer
+                modalContent.className = "bg-slate-800 border-2 border-rose-500 rounded-2xl p-8 max-w-lg w-full mx-4 shadow-[0_0_30px_-5px_rgba(244,63,94,0.5)] modal-enter text-center";
+                modalIcon.innerText = "❌";
+                modalTitle.innerText = "Reaction Failed!";
+                modalTitle.className = "text-3xl font-bold mb-4 text-rose-400";
+            }
+
+            modalMessage.innerText = option.reason;
+        }
+
+        function nextLevel() {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+            
+            currentLevel++;
+            
+            if (currentLevel >= levels.length) {
+                showGameOver();
+            } else {
+                loadLevel();
+            }
+        }
+
+        function showGameOver() {
+            document.querySelector('header').classList.add('hidden');
+            document.querySelector('main').classList.add('hidden');
+            gameOverScreen.classList.remove('hidden');
+            gameOverScreen.classList.add('flex');
+            finalScore.innerText = score;
+        }
+
+        // Start Game
+        window.onload = loadLevel;
+
+    </script>
+</body>
+</html>
