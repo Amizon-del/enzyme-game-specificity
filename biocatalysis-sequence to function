@@ -1,0 +1,119 @@
+<quiz>
+<title>Biocatalyst Concepts & Logic - Part 1</title>
+<description>Objective questions regarding protein sequence, 3D structure, and industrial application.</description>
+<question type="multiple-choice">
+<number>1</number>
+<text>If a mutation in the primary sequence replaces a flexible Glycine with a bulky Tryptophan, what is the most likely structural consequence?</text>
+<options>
+<option correct="false">
+<text>The protein will become more flexible and increase its catalytic rate.</text>
+<feedback>Incorrect. Bulky residues like Tryptophan typically restrict movement and create steric hindrance.</feedback>
+</option>
+<option correct="true">
+<text>The folding pattern may be disrupted, potentially collapsing the active site.</text>
+<feedback>Correct! Introducing a large side chain where a small one was expected physically prevents the protein from folding into its functional 3D shape.</feedback>
+</option>
+<option correct="false">
+<text>The primary sequence will change but the 3D structure will remain identical.</text>
+<feedback>Incorrect. The 3D structure is a direct result of the sequence; changing chemical properties usually alters the fold.</feedback>
+</option>
+<option correct="false">
+<text>The enzyme will automatically gain the ability to recognize larger substrates.</text>
+<feedback>Incorrect. A random bulky mutation is more likely to block an active site than precisely re-engineer it.</feedback>
+</option>
+</options>
+<hint>Consider the physical size difference between the smallest amino acid and one of the largest.</hint>
+</question>
+<question type="multiple-choice">
+<number>2</number>
+<text>When engineering an enzyme to survive high temperatures (70°C) in an industrial vat, which zone should an engineer primarily target?</text>
+<options>
+<option correct="false">
+<text>The Active Site (Red/Orange zone) to increase reaction speed.</text>
+<feedback>Incorrect. The active site focuses on chemistry, but heat survival is a matter of overall structural integrity.</feedback>
+</option>
+<option correct="false">
+<text>The C-terminal end only, regardless of the 3D structure.</text>
+<feedback>Incorrect. Stability depends on interactions throughout the 3D fold.</feedback>
+</option>
+<option correct="true">
+<text>The structural scaffolding (Green/Blue zones) to enhance rigidity.</text>
+<feedback>Correct! Mutations in these outer or core regions create new stabilizing bonds that keep the protein from 'melting' at high temperatures.</feedback>
+</option>
+<option correct="false">
+<text>The substrate itself, to make it more heat-resistant.</text>
+<feedback>Incorrect. Engineering focuses on the catalyst, not the chemical feedstock.</feedback>
+</option>
+</options>
+<hint>Think about which part of the protein acts as 'armor' rather than 'machinery'.</hint>
+</question>
+<question type="multiple-choice">
+<number>3</number>
+<text>Why does the natural enzyme Pepsin specifically cleave next to Phenylalanine but ignore Alanine?</text>
+<options>
+<option correct="false">
+<text>Alanine is too chemically reactive for the enzyme to handle.</text>
+<feedback>Incorrect. Alanine is relatively inert; the issue is its size and lack of binding markers.</feedback>
+</option>
+<option correct="false">
+<text>Pepsin only works on amino acids that contain sulfur.</text>
+<feedback>Incorrect. Pepsin targets aromatic residues which do not contain sulfur.</feedback>
+</option>
+<option correct="true">
+<text>The 3D binding pocket is geometrically shaped to fit bulky aromatic rings.</text>
+<feedback>Correct! Biocatalytic precision relies on the 'Lock and Key' fit provided by the specific environment of the binding pocket.</feedback>
+</option>
+<option correct="false">
+<text>Alanine residues are always hidden inside the protein core and never exposed.</text>
+<feedback>Incorrect. Selectivity is due to the active site's geometry, not the substrate's location.</feedback>
+</option>
+</options>
+<hint>Recall the 'Lock and Key' model of enzyme specificity.</hint>
+</question>
+<question type="multiple-choice">
+<number>4</number>
+<text>In the sequence ...-Ala-Lys-Gly-Val-Thr-Asp-..., what is the primary role of the Lysine (+) and Aspartic Acid (-) residues?</text>
+<options>
+<option correct="false">
+<text>They act as a hinge to allow the protein to stretch.</text>
+<feedback>Incorrect. Charged residues usually form stable pins rather than flexible hinges.</feedback>
+</option>
+<option correct="true">
+<text>They form a salt bridge (ionic interaction) that 'staples' the 3D fold together.</text>
+<feedback>Correct! The attraction between positive and negative charges creates a stabilizing bridge in the folded structure.</feedback>
+</option>
+<option correct="false">
+<text>They provide the hydrophobic force needed to hide from water.</text>
+<feedback>Incorrect. These residues are charged and hydrophilic (water-loving).</feedback>
+</option>
+<option correct="false">
+<text>They are filler residues that have no impact on the final function.</text>
+<feedback>Incorrect. Charged residues are critical for both stability and catalysis.</feedback>
+</option>
+</options>
+<hint>Think about the electrical charges of 'Lys' and 'Asp'.</hint>
+</question>
+<question type="multiple-choice">
+<number>5</number>
+<text>What is the most likely result of mutating an Aspartic Acid (-) to a Lysine (+) near an existing Lysine (+) residue?</text>
+<options>
+<option correct="false">
+<text>The protein will become twice as stable due to the extra positive charge.</text>
+<feedback>Incorrect. Like charges repel, causing instability.</feedback>
+</option>
+<option correct="false">
+<text>The sequence will remain functional because both are amino acids.</text>
+<feedback>Incorrect. Swapping attraction for repulsion usually destroys the 3D fold.</feedback>
+</option>
+<option correct="true">
+<text>Electrostatic repulsion will likely 'unzip' the protein fold, causing denaturation.</text>
+<feedback>Correct! Like charges push apart, disrupting the structural integrity of the enzyme.</feedback>
+</option>
+<option correct="false">
+<text>The enzyme will shift its optimal pH to a highly basic range.</text>
+<feedback>Incorrect. The immediate effect of charge repulsion is structural collapse.</feedback>
+</option>
+</options>
+<hint>Remember the basic rule of physics regarding like charges.</hint>
+</question>
+</quiz>
